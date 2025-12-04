@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script para atualizar registros DNS IPv6 na Spaceship
-Atualiza automaticamente o registro AAAA com o IPv6 público do servidor
+Script to update IPv6 DNS records on Spaceship
+Automatically updates the AAAA record with the server's public IPv6
 """
 
 import json

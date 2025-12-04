@@ -1,13 +1,13 @@
 # Spaceship DNS IPv6 Updater
 
-Python script to automatically update IPv6 (AAAA) DNS records on the Spaceship platform.
+Python script to automatically update IPv6 DNS records (AAAA) on the Spaceship platform.
 
 ## Features
 
 - Gets the local server's hostname
 - Gets the server's public IPv6 via https://api6.ipify.org
 - Queries current DNS records via Spaceship API (GET)
-- Compares the current IPv6 with the DNS record
+- Compares the current IPv6 with the DNS record IPv6
 - Updates or creates the AAAA record (hostname@domain) if needed via API (PUT)
 - Modular code divided into specific functions
 
@@ -19,26 +19,16 @@ Python script to automatically update IPv6 (AAAA) DNS records on the Spaceship p
 
 ## Installation
 
-1. **From GitHub**:
-   You can clone and install this project directly from GitHub:
+Clone the repository from GitHub:
 
-   ```bash
-   git clone https://github.com/maxwelfreitas/spaceship-dns-ipv6-updater.git
-   cd spaceship-dns-ipv6-updater
-   cp .env.example .env.spaceship
-   # Edit the .env.spaceship file with your Spaceship credentials
-   ```
-
-2. **From source**:
-   Set up the environment variables:
-   ```bash
-   cp .env.example .env.spaceship
-   # Edit the .env.spaceship file with your credentials
-   ```
+```bash
+git clone https://github.com/maxwelfreitas/spaceship_updater.git
+cd spaceship_updater
+```
 
 ## Configuration
 
-Set the following environment variables:
+Configure the following environment variables:
 
 - `SPACESHIP_DOMAIN`: Your domain (e.g., example.com)
 - `SPACESHIP_API_KEY`: Your Spaceship API key
@@ -47,9 +37,16 @@ Set the following environment variables:
 ### Configuration options:
 
 **Option 1: .env.spaceship file** (recommended)
+
+Create a `.env.spaceship` file in the project directory:
+
 ```bash
-export $(cat .env.spaceship | xargs)
+SPACESHIP_DOMAIN=yourdomain.com
+SPACESHIP_API_KEY=your_api_key
+SPACESHIP_SECRET=your_secret
 ```
+
+The script will automatically load these variables when executed.
 
 **Option 2: Direct environment variables**
 ```bash
@@ -75,14 +72,15 @@ chmod +x updater.py
 
 The program is divided into the following functions:
 
+- `load_dotenv()`: Loads environment variables from .env.spaceship file
 - `get_hostname()`: Gets the server's hostname
 - `get_public_ipv6()`: Gets the server's public IPv6
 - `get_env_variables()`: Validates and returns environment variables
 - `get_dns_records()`: Queries DNS records via API (GET)
-- `find_aaaa_record()`: Finds the existing IPv6 record for the hostname
+- `find_aaaa_record()`: Locates the existing IPv6 record for the hostname
 - `needs_update()`: Checks if an update is needed
 - `update_dns_record()`: Updates or creates the DNS record (PUT)
-- `main()`: Orchestrates the whole process
+- `main()`: Orchestrates the entire process
 
 ## Scheduling (Optional)
 
@@ -93,42 +91,30 @@ To run automatically, add to crontab:
 0 * * * * cd /path/to/spaceship_updater && /usr/bin/python3 updater.py >> /var/log/dns-updater.log 2>&1
 ```
 
-## Example Output
+## Output Example
 
 ```
-============================================================
-Starting IPv6 DNS record update
-============================================================
-
-Domain: example.com
-
---- Getting server hostname ---
-Server hostname: myserver
-
---- Getting public IPv6 ---
-Public IPv6 obtained: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-
---- Querying DNS records ---
-DNS records successfully obtained
-
---- Checking AAAA record ---
-Existing AAAA record found: 2001:0db8:85a3:0000:0000:8a2e:0370:1234
-
---- Checking if update is needed ---
-IPv6 changed from 2001:0db8:85a3:0000:0000:8a2e:0370:1234 to 2001:0db8:85a3:0000:0000:8a2e:0370:7334, will update
-
---- Updating DNS record ---
-DNS record updated successfully!
-
-============================================================
-Process finished successfully!
-============================================================
+2025-12-04 10:00:00 Starting IPv6 DNS record update
+2025-12-04 10:00:00 Domain: example.com
+2025-12-04 10:00:00 Getting server hostname
+2025-12-04 10:00:00 Server hostname: myserver
+2025-12-04 10:00:00 Getting public IPv6 address
+2025-12-04 10:00:00 Public IPv6 obtained: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+2025-12-04 10:00:00 Querying DNS records
+2025-12-04 10:00:00 DNS records successfully obtained
+2025-12-04 10:00:00 Checking AAAA record
+2025-12-04 10:00:00 Existing AAAA record found: {'id': '123', 'type': 'AAAA', 'name': 'myserver', 'address': '2001:0db8:85a3:0000:0000:8a2e:0370:1234'}
+2025-12-04 10:00:00 Checking if update is needed
+2025-12-04 10:00:00 IPv6 changed from 2001:0db8:85a3:0000:0000:8a2e:0370:1234 to 2001:0db8:85a3:0000:0000:8a2e:0370:7334, will update
+2025-12-04 10:00:00 Updating DNS record
+2025-12-04 10:00:00 DNS record updated successfully!
+2025-12-04 10:00:00 Process finished successfully!
 ```
 
 ## Error Handling
 
 The script includes error handling for:
-- Failure to connect to the IPv6 API
+- Connection failure with the IPv6 API
 - Missing environment variables
 - Spaceship API errors
 - Invalid DNS records
