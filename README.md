@@ -19,20 +19,14 @@ Script Python para atualizar automaticamente registros DNS IPv6 (AAAA) na plataf
 
 ## Instalação
 
-### Instalação a partir do GitHub
-
-Você pode clonar e instalar este projeto diretamente do GitHub:
+Clone o repositório do GitHub:
 
 ```bash
-git clone https://github.com/maxwelfreitas/spaceship-dns-ipv6-updater.git
-cd spaceship-dns-ipv6-updater
-cp .env.example .env.spaceship
-# Edite o arquivo .env.spaceship com suas credenciais da Spaceship
+git clone https://github.com/maxwelfreitas/spaceship_updater.git
+cd spaceship_updater
 ```
 
-Depois, siga as instruções de configuração e uso abaixo.
-
-### Configuração
+## Configuração
 
 Configure as seguintes variáveis de ambiente:
 
@@ -43,9 +37,16 @@ Configure as seguintes variáveis de ambiente:
 ### Opções de configuração:
 
 **Opção 1: Arquivo .env.spaceship** (recomendado)
+
+Crie um arquivo `.env.spaceship` no diretório do projeto:
+
 ```bash
-export $(cat .env.spaceship | xargs)
+SPACESHIP_DOMAIN=seudominio.com
+SPACESHIP_API_KEY=sua_api_key
+SPACESHIP_SECRET=seu_secret
 ```
+
+O script carregará automaticamente essas variáveis ao ser executado.
 
 **Opção 2: Variáveis de ambiente diretas**
 ```bash
@@ -71,13 +72,14 @@ chmod +x updater.py
 
 O programa está dividido nas seguintes funções:
 
-- `obter_hostname()`: Obtém o hostname do servidor
-- `obter_ipv6_publico()`: Obtém o IPv6 público do servidor
-- `obter_variaveis_ambiente()`: Valida e retorna as variáveis de ambiente
-- `obter_registros_dns()`: Consulta os registros DNS via API (GET)
-- `encontrar_registro_aaaa()`: Localiza o registro IPv6 existente para o hostname
-- `precisa_atualizar()`: Verifica se há necessidade de atualização
-- `atualizar_registro_dns()`: Atualiza ou cria o registro DNS (PUT)
+- `load_dotenv()`: Carrega variáveis de ambiente do arquivo .env.spaceship
+- `get_hostname()`: Obtém o hostname do servidor
+- `get_public_ipv6()`: Obtém o IPv6 público do servidor
+- `get_env_variables()`: Valida e retorna as variáveis de ambiente
+- `get_dns_records()`: Consulta os registros DNS via API (GET)
+- `find_aaaa_record()`: Localiza o registro IPv6 existente para o hostname
+- `needs_update()`: Verifica se há necessidade de atualização
+- `update_dns_record()`: Atualiza ou cria o registro DNS (PUT)
 - `main()`: Orquestra todo o processo
 
 ## Agendamento (Opcional)
@@ -92,33 +94,21 @@ Para executar automaticamente, adicione ao crontab:
 ## Exemplo de Saída
 
 ```
-============================================================
-Iniciando atualização de registro DNS IPv6
-============================================================
-
-Domínio: example.com
-
---- Obtendo hostname do servidor ---
-Hostname do servidor: myserver
-
---- Obtendo IPv6 público ---
-IPv6 público obtido: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-
---- Consultando registros DNS ---
-Registros DNS obtidos com sucesso
-
---- Verificando registro AAAA ---
-Registro AAAA existente encontrado: 2001:0db8:85a3:0000:0000:8a2e:0370:1234
-
---- Verificando necessidade de atualização ---
-IPv6 mudou de 2001:0db8:85a3:0000:0000:8a2e:0370:1234 para 2001:0db8:85a3:0000:0000:8a2e:0370:7334, será atualizado
-
---- Atualizando registro DNS ---
-Registro DNS atualizado com sucesso!
-
-============================================================
-Processo concluído com sucesso!
-============================================================
+2025-12-04 10:00:00 Starting IPv6 DNS record update
+2025-12-04 10:00:00 Domain: example.com
+2025-12-04 10:00:00 Getting server hostname
+2025-12-04 10:00:00 Server hostname: myserver
+2025-12-04 10:00:00 Getting public IPv6 address
+2025-12-04 10:00:00 Public IPv6 obtained: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+2025-12-04 10:00:00 Querying DNS records
+2025-12-04 10:00:00 DNS records successfully obtained
+2025-12-04 10:00:00 Checking AAAA record
+2025-12-04 10:00:00 Existing AAAA record found: {'id': '123', 'type': 'AAAA', 'name': 'myserver', 'address': '2001:0db8:85a3:0000:0000:8a2e:0370:1234'}
+2025-12-04 10:00:00 Checking if update is needed
+2025-12-04 10:00:00 IPv6 changed from 2001:0db8:85a3:0000:0000:8a2e:0370:1234 to 2001:0db8:85a3:0000:0000:8a2e:0370:7334, will update
+2025-12-04 10:00:00 Updating DNS record
+2025-12-04 10:00:00 DNS record updated successfully!
+2025-12-04 10:00:00 Process finished successfully!
 ```
 
 ## Tratamento de Erros
